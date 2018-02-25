@@ -1,0 +1,5 @@
+import numpy as np
+
+x = np.load('flower_priors.npy')
+
+print(x)
