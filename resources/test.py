@@ -1,5 +1,5 @@
 import numpy as np
 
-x = np.load('prior_probs.npy')
+x = np.load('no_prior_probs.npy')
 
 print(x)
