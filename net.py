@@ -28,7 +28,7 @@ class Net(object):
     #conv1
     conv_num = 1
 
-    temp_conv = conv2d('conv' + str(conv_num), data_l, [3, 3, 1, 64], stride=1, wd=self.weight_decay)
+    temp_conv = conv2d('conv' + str(conv_num), data_l, [3, 3, 3, 64], stride=1, wd=self.weight_decay)
     conv_num += 1
 
     temp_conv = conv2d('conv' + str(conv_num), temp_conv, [3, 3, 64, 64], stride=2, wd=self.weight_decay)
