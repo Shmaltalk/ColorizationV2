@@ -1,6 +1,8 @@
 from skimage import color
 from skimage.transform import resize
 from skimage.io import imread
+from skimage.transform import downscale_local_mean
+from skimage.transform import pyramid_expand
 import numpy as np
 import os
 import sklearn.neighbors as nn
@@ -223,7 +225,10 @@ def preprocess(data):
   Args: 
     data: RGB batch (N * H * W * 3)
   Return:
-    data_l: L channel batch (N * H * W * 1)
+    data_l:L channel batch (N * H * W * 1) 
+           ((TALIE- changed to (N * H * W * 3) where ab channels are downsampled))
+
+
     gt_ab_313: ab discrete channel batch (N * H/4 * W/4 * 313)
     prior_boost_nongray: (N * H/4 * W/4 * 1) 
   '''
@@ -232,16 +237,27 @@ def preprocess(data):
   H = data.shape[1]
   W = data.shape[2]
 
+  #TALIE 
+  downsample = color.rgb2lab(downsample_color_channels(data))
+  #print("downsample: ", downsample.shape)
+  downsample = color.rgb2lab(downsample)
+  
   #rgb2lab
   img_lab = color.rgb2lab(data)
+  #print("img_lab: ", img_lab.shape)
 
   #slice
   #l: [0, 100]
-  img_l = img_lab[:, :, :, 0:1]
+  img_l = np.copy(img_lab)
+  img_l[:, :, :, 1:] = downsample[:, :, :, 1:]
+  
+  #img_l = img_lab[:, :, :, 0:1]
+  
   #ab: [-110, 110]
   data_ab = img_lab[:, :, :, 1:]
 
-  #scale img_l to [-50, 50]
+  #scale img_l to [-50, 50] TALIE WHY??
+  #img_l[:, :, :, 0] -= 50
   data_l = img_l - 50
 
   #subsample 1/4  (N * H/4 * W/4 * 2)
@@ -264,6 +280,16 @@ def preprocess(data):
   prior_boost_nongray = prior_boost * nongray_mask
 
   return data_l, gt_ab_313, prior_boost_nongray
+
+#get the downsampled a/b channels for use in input
+def downsample_color_channels(imgs):
+    ds_factor = len(imgs[0][1]) // 4
+    #print("ds factor: ", ds_factor)
+    
+    for i in range(len(imgs)):
+        temp = downscale_local_mean(imgs[i], (ds_factor, ds_factor, 1))
+        imgs[i] = pyramid_expand(temp, ds_factor)
+    return imgs
 
 def softmax(x):
     """Compute softmax values for each sets of scores in x."""

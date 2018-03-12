@@ -10,17 +10,15 @@ import os.path
 
 print(sys.argv[1])
 img = cv2.imread(sys.argv[1])
-model = 'models/originalModel.ckpt'
-output_dir = './recolored_'
-#model = '/home/taliem/ColorData/models/originalModel.ckpt'
-#output_dir = '/home/taliem/color-redo/colorization-tf/'
+model = '/home/taliem/ColorData/models/originalModel.ckpt'
+output_dir = '/home/taliem/color-redo/'
 #output_dir = '/home/taliem/ColorData/recolors/noPriors/'
 
 if len(img.shape) == 3:
   img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
 img = img[None, :, :, None]
-print(img)
+print(img.shape)
 data_l = (img.astype(dtype=np.float32)) / 255.0 * 100 - 50
 
 #data_l = tf.placeholder(tf.float32, shape=(None, None, None, 1))

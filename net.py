@@ -28,6 +28,7 @@ class Net(object):
     #conv1
     conv_num = 1
 
+    #TALIE changed [3, 3, 1, 64] to [3, 3, 3, 64] this should increase input channels to 3
     temp_conv = conv2d('conv' + str(conv_num), data_l, [3, 3, 3, 64], stride=1, wd=self.weight_decay)
     conv_num += 1
 
@@ -124,12 +125,15 @@ class Net(object):
 
     flat_conv8_313 = tf.reshape(conv8_313, [-1, 313])
     flat_gt_ab_313 = tf.reshape(gt_ab_313, [-1,313])
+    
+#    print(flat_conv8_313.eval())
+#    print(flat_gt_ab_313.eval())
     g_loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(logits=flat_conv8_313, labels=flat_gt_ab_313)) / (self.batch_size)
-
+    
     tf.summary.scalar('weight_loss', tf.add_n(tf.get_collection('losses', scope=scope)))
     #
     dl2c = tf.gradients(g_loss, conv8_313)
     dl2c = tf.stop_gradient(dl2c)
     #
     new_loss = tf.reduce_sum(dl2c * conv8_313 * prior_boost_nongray) + tf.add_n(tf.get_collection('losses', scope=scope))
-    return new_loss, g_loss
+    return new_loss, g_loss, flat_conv8_313, flat_gt_ab_313

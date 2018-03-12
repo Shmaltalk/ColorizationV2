@@ -2,8 +2,7 @@ import subprocess
 
 
 lists_f = open('data/smallTest.txt', 'r')
-containing_path = './testimages/'
-#containing_path = '/home/taliem/ColorData/flowers/64x64/'
+containing_path = '/home/taliem/ColorData/flowers/64x64/'
 
 for img in lists_f:
     img = img.strip()

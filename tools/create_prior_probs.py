@@ -13,6 +13,7 @@ points = points[None, :, :]
 filename_lists = []
 probs = np.zeros((313), dtype=np.float64)
 #probs = np.ones((313), dtype=np.float64)/313
+
 num = 0
 containing_folder = '/home/taliem/ColorData/flowers/64x64/'
 
@@ -51,4 +52,6 @@ for img_f in filename_lists:
 sess.close()
 probs = probs / np.sum(probs)
 
-np.save('resources/prior_probs', probs)
+
+
+np.save('resources/no_prior_probs', probs)

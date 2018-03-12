@@ -28,6 +28,7 @@ class Solver(object):
       self.learning_rate = float(solver_params['learning_rate'])
       self.moment = float(solver_params['moment'])
       self.max_steps = int(solver_params['max_iterators'])
+      self.train_dir = str(solver_params['train_dir'])
       self.lr_decay = float(solver_params['lr_decay'])
       self.decay_steps = int(solver_params['decay_steps'])
     #self.train_dir = './resources/'
@@ -37,12 +38,12 @@ class Solver(object):
 
   def construct_graph(self, scope):
     with tf.device('/gpu:' + str(self.device_id)):
-      self.data_l = tf.placeholder(tf.float32, (self.batch_size, self.height, self.width, 1))
+      self.data_l = tf.placeholder(tf.float32, (self.batch_size, self.height, self.width, 3)) #TALIE
       self.gt_ab_313 = tf.placeholder(tf.float32, (self.batch_size, int(self.height / 4), int(self.width / 4), 313))
       self.prior_boost_nongray = tf.placeholder(tf.float32, (self.batch_size, int(self.height / 4), int(self.width / 4), 1))
 
       self.conv8_313 = self.net.inference(self.data_l)
-      new_loss, g_loss = self.net.loss(scope, self.conv8_313, self.prior_boost_nongray, self.gt_ab_313)
+      new_loss, g_loss, self.testx, self.testy = self.net.loss(scope, self.conv8_313, self.prior_boost_nongray, self.gt_ab_313)
       tf.summary.scalar('new_loss', new_loss)
       tf.summary.scalar('total_loss', g_loss)
     return new_loss, g_loss
@@ -91,11 +92,15 @@ class Solver(object):
         t1 = time.time()
         data_l, gt_ab_313, prior_boost_nongray = self.dataset.batch()
         t2 = time.time()
-        _, loss_value = sess.run([train_op, self.total_loss], feed_dict={self.data_l:data_l, self.gt_ab_313:gt_ab_313, self.prior_boost_nongray:prior_boost_nongray})
+        print("!!!!!TALIE!!!!!!!!!  data_l shape:  ", data_l.shape)
+        _, loss_value, x, y = sess.run([train_op, self.total_loss, self.testx, self.testy], feed_dict={self.data_l:data_l, self.gt_ab_313:gt_ab_313, self.prior_boost_nongray:prior_boost_nongray})
+        print(np.any(np.isnan(x)), np.any(np.isnan(y)))
+        
         duration = time.time() - start_time
         t3 = time.time()
         print('io: ' + str(t2 - t1) + '; compute: ' + str(t3 - t2))
-        assert not np.isnan(loss_value), 'Model diverged with loss = NaN'
+        
+        #assert not np.isnan(loss_value), 'Model diverged with loss = NaN'
 
         if step % 1 == 0:
           num_examples_per_step = self.batch_size * self.num_gpus
@@ -107,9 +112,9 @@ class Solver(object):
           print (format_str % (datetime.now(), step, loss_value,
                                examples_per_sec, sec_per_batch))
 
-        if step % 10 == 0:
-          summary_str = sess.run(summary_op, feed_dict={self.data_l:data_l, self.gt_ab_313:gt_ab_313, self.prior_boost_nongray:prior_boost_nongray})
-          summary_writer.add_summary(summary_str, step)
+#        if step % 10 == 0:
+#          summary_str = sess.run(summary_op, feed_dict={self.data_l:data_l, self.gt_ab_313:gt_ab_313, self.prior_boost_nongray:prior_boost_nongray})
+#          summary_writer.add_summary(summary_str, step)
 
         # Save the model checkpoint periodically.
         if step % 1000 == 0:
