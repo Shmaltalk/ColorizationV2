@@ -102,7 +102,7 @@ class NNEncode():
 
         P = pts_flt.shape[0]
 
-        #print('TALIETALIETALIE' + str(pts_flt))
+        
         (dists,inds) = self.nbrs.kneighbors(pts_flt)
 
         wts = np.exp(-dists**2/(2*self.sigma**2))
@@ -248,17 +248,21 @@ def preprocess(data):
 
   #slice
   #l: [0, 100]
-  img_l = np.copy(img_lab)
-  img_l[:, :, :, 1:] = downsample[:, :, :, 1:]
+  img_ds = np.copy(img_lab)
+  img_ds[:, :, :, 1:] = downsample[:, :, :, 1:]
   
   #img_l = img_lab[:, :, :, 0:1]
   
   #ab: [-110, 110]
   data_ab = img_lab[:, :, :, 1:]
 
+  #print("data ab max, min: ", data_ab.max(), data_ab.min())
+  #print("l max, min : ", img_l[:, :, :, 0].max(), img_l[:, :, :, 0].min())
+
   #scale img_l to [-50, 50] TALIE WHY??
   #img_l[:, :, :, 0] -= 50
-  data_l = img_l - 50
+  data_ds = np.copy(img_ds)
+  data_ds[:, :, :, 0] -= 50
 
   #subsample 1/4  (N * H/4 * W/4 * 2)
   data_ab_ss = data_ab[:, ::4, ::4, :]
@@ -279,7 +283,7 @@ def preprocess(data):
   #prior_boost_nongray: [N, 1, H/4, W/4]
   prior_boost_nongray = prior_boost * nongray_mask
 
-  return data_l, gt_ab_313, prior_boost_nongray
+  return data_ds, gt_ab_313, prior_boost_nongray
 
 #get the downsampled a/b channels for use in input
 def downsample_color_channels(imgs):

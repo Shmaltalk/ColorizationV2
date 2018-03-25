@@ -4,6 +4,9 @@ from optparse import OptionParser
 from solver import Solver
 from solver_multigpu import SolverMultigpu
 from utils import process_config
+import time
+
+print("start: ", time.asctime( time.localtime(time.time()) ))
 
 parser = OptionParser()
 parser.add_option("-c", "--conf", dest="configure",  
@@ -21,3 +24,5 @@ if len(str(common_params['gpus']).split(','))==1:
 else:
   solver = SolverMultigpu(True, common_params, solver_params, net_params, dataset_params)
 solver.train_model()
+
+print("end: ", time.asctime( time.localtime(time.time()) ))

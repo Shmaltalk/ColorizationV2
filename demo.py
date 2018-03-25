@@ -14,9 +14,11 @@ model = '/home/taliem/ColorData/models/originalModel.ckpt'
 output_dir = '/home/taliem/color-redo/'
 #output_dir = '/home/taliem/ColorData/recolors/noPriors/'
 
+print(img.shape)
 if len(img.shape) == 3:
   img = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
+print("gray:", img.shape)
 img = img[None, :, :, None]
 print(img.shape)
 data_l = (img.astype(dtype=np.float32)) / 255.0 * 100 - 50
@@ -31,6 +33,7 @@ with tf.Session() as sess:
   saver.restore(sess, model)
   conv8_313 = sess.run(conv8_313)
 
+print("min, max, shape", data_l.min(), data_l.max(), data_l.shape)
 img_rgb = decode(data_l, conv8_313, 2.63)
 new_name = output_dir + os.path.basename(sys.argv[1])
 imsave(new_name, img_rgb)

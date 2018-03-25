@@ -92,13 +92,13 @@ class Solver(object):
         t1 = time.time()
         data_l, gt_ab_313, prior_boost_nongray = self.dataset.batch()
         t2 = time.time()
-        print("!!!!!TALIE!!!!!!!!!  data_l shape:  ", data_l.shape)
+        #print("!!!!!TALIE!!!!!!!!!  data_l shape:  ", data_l.shape)
         _, loss_value, x, y = sess.run([train_op, self.total_loss, self.testx, self.testy], feed_dict={self.data_l:data_l, self.gt_ab_313:gt_ab_313, self.prior_boost_nongray:prior_boost_nongray})
-        print(np.any(np.isnan(x)), np.any(np.isnan(y)))
+        #print(np.any(np.isnan(x)), np.any(np.isnan(y)))
         
         duration = time.time() - start_time
         t3 = time.time()
-        print('io: ' + str(t2 - t1) + '; compute: ' + str(t3 - t2))
+        #print('io: ' + str(t2 - t1) + '; compute: ' + str(t3 - t2))
         
         #assert not np.isnan(loss_value), 'Model diverged with loss = NaN'
 
