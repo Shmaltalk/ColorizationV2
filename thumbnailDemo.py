@@ -35,15 +35,6 @@ data_l = data_l[None, :, :, None] / 255.0 * 100 - 50
 print("max, min", data_l.max(), data_l.min())
 print(data_l.shape)
 
-
-
-#img = img[None, :, :, :]
-#print(img.shape)
-#data_input = skimage.color.rgb2lab(np.copy(img))
-#data_input = data_input.astype(dtype=np.float32)
-#data_input[:, :, :, 1:] = downsample_color_channels(img)[:, :, :, 1:]
-#data_input = data_input[:, :, :, 0] - 50
-
 #data_l = tf.placeholder(tf.float32, shape=(None, None, None, 1))
 autocolor = Net(train=False)
 
@@ -53,12 +44,6 @@ saver = tf.train.Saver()
 with tf.Session() as sess:
   saver.restore(sess, model)
   conv8_313 = sess.run(conv8_313)
-
-#test
-#img_rgb = np.concatenate(data_l, original_ab)
-#print(img_rgb.shape)q
-#img_rgb[:, :, :, 0] = data_l
-#img_rgb[:, :, :, 1:] = original_ab
 
 print("min, max, shape", data_l.min(), data_l.max(), data_l.shape)
 img_rgb = decode(data_l, conv8_313, 2.63)
