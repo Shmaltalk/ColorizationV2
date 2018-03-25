@@ -1,5 +1,8 @@
 import numpy as np
 
-x = np.load('prior_probs.npy')
+fl = 'original_priors.npy')
+
+x = np.load(fl)
 
 print(x)
+print(fl)
