@@ -239,8 +239,11 @@ def preprocess(data):
 
   #TALIE 
   downsample = color.rgb2lab(downsample_color_channels(data))
+  
+  downsample[:, :, :, 1:] = downsample[:, :, :, 1:] / 110.0 * 50
+  #print("min, max", downsample[:, :, :, 1:].min(), downsample[:, :, :, 1:].max())
   #print("downsample: ", downsample.shape)
-  downsample = color.rgb2lab(downsample)
+  #downsample = color.rgb2lab(downsample)
   
   #rgb2lab
   img_lab = color.rgb2lab(data)
