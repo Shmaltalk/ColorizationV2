@@ -16,23 +16,23 @@ probs = np.zeros((313), dtype=np.float64)
 
 num = 0
 containing_folder = '/home/taliem/ColorData/flowers/64x64/'
-
-
+ 
+ 
 for img_f in lists_f:
   img_f = img_f.strip()
   filename_lists.append(img_f)
 random.shuffle(filename_lists)
-
+ 
 #construct graph
 in_data = tf.placeholder(tf.float64, [None, 2])
 expand_in_data = tf.expand_dims(in_data, axis=1)
-
+ 
 distance = tf.reduce_sum(tf.square(expand_in_data - points), axis=2)
 index = tf.argmin(distance, axis=1)
 config = tf.ConfigProto()
 config.gpu_options.allow_growth=True
 sess = tf.Session(config=config)
-
+ 
 for img_f in filename_lists:
   img_f = img_f.strip()
   img = imread(containing_folder + img_f)

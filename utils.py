@@ -237,6 +237,7 @@ def preprocess(data):
   H = data.shape[1]
   W = data.shape[2]
 
+
   #TALIE 
   downsample = color.rgb2lab(downsample_color_channels(data))
   

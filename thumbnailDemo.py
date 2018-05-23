@@ -14,15 +14,16 @@ import numpy as np
 
 def test(imgname, sess):
   
-  #output_dir = '/home/taliem/color-redo/'
-  output_dir = '/home/taliem/ColorData/recolors/thumbnail2/'
+#  output_dir = '/home/taliem/color-redo/'
+  output_dir = '/home/taliem/ColorData/recolors/thumbnail-flowerPriors-only/'
 
-  img = cv2.imread(imgname)
+  img = cv2.imread(imgname) #in BGR
+  img_in_rgb = np.copy(img)[:, :, ::-1] #in RGB
 #  print(img.shape)
   
-  data_input, original_ab, prior_boost_nongray = utils.preprocess(np.copy(img[None, :, :, :]))
+  data_input, original_ab, prior_boost_nongray = utils.preprocess(np.copy(img_in_rgb[None, :, :, :]))
   data_input = data_input.astype(dtype=np.float32)
- # print(type(data_input))
+# print(type(data_input))
   
   #only the L channel
   data_l = (cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)).astype(dtype=np.float32)
@@ -31,7 +32,6 @@ def test(imgname, sess):
 #  print("max, min", data_l.max(), data_l.min())
 #  print(data_l.shape)\
 
-     
   #conv8_313 = autocolor.inference(data_input)
 
   output = sess.run(conv8_313, feed_dict={conv_placeholder:data_input})
@@ -39,17 +39,17 @@ def test(imgname, sess):
     
 #  print("min, max, shape", data_l.min(), data_l.max(), data_l.shape)
   img_rgb = decode(data_l, output, 2.63)
-  stack = np.hstack((img_rgb, img[:,:,::-1].astype(dtype=np.float32) / 255.0))
+#  stack = np.hstack((img_rgb, img[:,:,::-1].astype(dtype=np.float32) / 255.0))
   #  print(img_rgb.shape)
   new_name = output_dir + os.path.basename(imgname)
-  #imsave(img_rgb)
-  imsave(new_name, stack)
+  imsave(new_name, img_rgb)
+#  imsave(new_name, stack)
 
 
 if __name__ == "__main__":
   lists_f = open('data/test.txt', 'r')
   containing_path = '/home/taliem/ColorData/flowers/64x64/'
-  model = '/home/taliem/ColorData/models/thumbnail2.ckpt'
+  model = '/home/taliem/ColorData/models/thumbnail-flowerpriors-for-sure.ckpt'
 
   autocolor = Net(train=False)
   conv_placeholder = tf.placeholder(tf.float32, (1, 64, 64, 3))
